@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <title>Mongoose OS :: IMU Visualization</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+  </head>
+
+  <body>
+    <div id="header">
+      Header.
+    </div>
+
+    <div id="main">
+      <div id="left">
+        <canvas id="canvas">
+        </canvas>
+        <div id="hud">
+          <table>
+            <tr><th>Algorithm</th><td>Madgwick AHRS</td></tr>
+            <tr><th>Port</th><td>/dev/ttyUSB0</td></tr>
+            <tr><th>IMU Rate</th><td>100Hz</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div id="right">
+        <div id="graphs">
+          <div id="graph_accel" class="graph">
+            Graph Accel.
+          </div>
+          <div id="graph_gyro" class="graph">
+            Graph Gyro.
+          </div>
+          <div id="graph_mag" class="graph">
+            Graph Mag.
+          </div>
+        </div>
+        Right.
+      </div>
+    </div>
+
+    <div id="footer">
+      Footer.
+    </div>
+    
+    <script src="js/three.min.js"></script>
+    <script src="js/MadgwickAHRS.js"></script>
+    <script src="js/serial.js"></script>
+    <script src="js/imu_packet.js"></script>
+    <script src="js/scene.js"></script>
+  </body>
+</html>
+
