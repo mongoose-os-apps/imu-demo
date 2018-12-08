@@ -1,19 +1,9 @@
-
-
-/*global THREE: true,
-         window: true,
-         document: true,
-         requestAnimationFrame: true,
-         scene: true,
-         chrome: true,
-         ArrayBuffer: true,
-         Uint8Array: true,
-         Int8Array: true
-*/
-
 "use strict";
 
 var connectionId;
+var bytesReceived;
+var bytesSent;
+var bitrate;
 
 // Convert string to ArrayBuffer
 var convertStringToArrayBuffer = function (str) {
@@ -73,6 +63,7 @@ function ascii2strings(buffer) {
 var onReceiveCallback = function (info) {
     if (info.connectionId === connectionId && info.data) {
         ascii2strings(info.data);
+        bytesReceived += info.data.byteLength;
     }
 };
 
@@ -94,6 +85,7 @@ var onSend = function (sendInfo) {
         console.log("Serial port send failed");
     } else {
         //console.log("Sent bytes = ", sendInfo.bytesSent);
+      bytesSent += sendInfo.bytesSent;
         writeSerial("All work and no play make Jack a dull boy");
         //chrome.serial.disconnect(connectionId, onDisconnect);
     }
@@ -125,6 +117,9 @@ var onConnect = function (connectionInfo) {
 
 
     connectionId = connectionInfo.connectionId;
+    bitrate = connectionInfo.bitrate;
+    bytesReceived = 0;
+    bytesSent = 0;
     // Do whatever you need to do with the opened port.
 
     //writeSerial("Hello world!");
