@@ -12,8 +12,8 @@ function imu_packet_stats(packet) {
 
 function imu_packet_data(packet) {
   try {
-    imuData = JSON.parse(myString.slice(5));
+    imuData = JSON.parse(packet);
   } catch (ignore) {
-    console.log("Malformed DATA Packet: ", myString);
+    console.log("Malformed DATA Packet: ", packet);
   }
 }
