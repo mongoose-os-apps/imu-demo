@@ -106,9 +106,11 @@ var writeSerial = function (str) {
 
 var onGetDevices = function (ports) {
     var port;
+    $('div#header #ports select#port').text('');
     if (ports.length > 0) {
         for (port = 0; port < ports.length; port += 1) {
             console.log(ports[port].path);
+            $('div#header #ports select#port').append($('<option/>', {value: ports[port].path, text: ports[port].path}));
         }
     } else {
         console.log("No serial ports found");
@@ -130,4 +132,4 @@ var onConnect = function (connectionInfo) {
 };
 
 // Connect to the serial port 
-chrome.serial.connect("/dev/ttyUSB0", {bitrate: 115200}, onConnect);
+chrome.serial.connect("/dev/ttyUSB1", {bitrate: 115200}, onConnect);
