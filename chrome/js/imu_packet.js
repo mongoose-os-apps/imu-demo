@@ -27,17 +27,16 @@ function imu_packet_stats(packet) {
 function imu_packet_data(packet) {
   try {
     imuData = JSON.parse(packet);
-
-    // Madgwick.updateAHRS(gx, gy, gz, ax, ay, az, mx, my, mz);
-    Madgwick.updateIMU(
-      imuData.g[0] / 4, // gx
-      imuData.g[1] / 4, // gy
-      imuData.g[2] / 4, // gz
-      imuData.a[0],     // ax
-      imuData.a[1],     // ay
-      imuData.a[2]);    // az
-
   } catch (ignore) {
     console.log("Malformed DATA Packet: ", packet);
   }
+
+  // Madgwick.updateAHRS(gx, gy, gz, ax, ay, az, mx, my, mz);
+  Madgwick.updateIMU(
+    imuData.g[0] / 4, // gx
+    imuData.g[1] / 4, // gy
+    imuData.g[2] / 4, // gz
+    imuData.a[0],     // ax
+    imuData.a[1],     // ay
+    imuData.a[2]);    // az
 }
