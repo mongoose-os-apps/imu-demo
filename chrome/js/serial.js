@@ -39,6 +39,7 @@ var Serial = {
     bytesSent:       0,
     failed:          0,
     transmitting:    false,
+    path:            "",
     outputBuffer:    [],
 
 
@@ -50,6 +51,7 @@ var Serial = {
             if (chrome.runtime.lastError) {
                 console.error(chrome.runtime.lastError.message);
             }
+            self.path = path;
 
             if (connectionInfo && !self.openCanceled) {
 	            self.connected = true;
@@ -178,9 +180,10 @@ var Serial = {
                     console.error(chrome.runtime.lastError.message);
                 }
 
-                result = result || self.connectionType == 'tcp'
                 if (result) {
                     console.log('SERIAL: Connection with ID: ' + self.connectionId + ' closed, Sent: ' + self.bytesSent + ' bytes, Received: ' + self.bytesReceived + ' bytes');
+                  self.path = '';
+                  $('div#hud td.port').text(this.path);
                 } else {
                     console.log('SERIAL: Failed to close connection with ID: ' + self.connectionId + ' closed, Sent: ' + self.bytesSent + ' bytes, Received: ' + self.bytesReceived + ' bytes');
                 }
@@ -318,6 +321,7 @@ var Serial = {
     open: function(openInfo, callback) {
       if (openInfo) {
           this.onReceive.addListener(callback);
+          $('div#hud td.port').text(this.path);
       }
     },
     emptyOutputBuffer: function () {
