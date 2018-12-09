@@ -1,0 +1,157 @@
+.graph {
+  width:              100%;
+  height:             139px;
+  background-color:   #ececec;
+  border: 1px solid #ccc;
+}
+
+.graph .info {
+    margin-bottom: 10px;
+    margin-top: 8px;
+    margin-left: 10px;
+}
+
+.graph .info input {
+    vertical-align: middle;
+    margin: 0 5px 0 15px;
+}
+
+.graph .info .first {
+    margin: 0 5px 0 0;
+}
+
+.graph .wrapper {
+    display: none;
+}
+
+.graph .options {
+    float: right;
+    width: 160px;
+    /* border: 1px solid silver; */
+    height: 100%;
+    height: 160px;
+    margin: 0px;
+    background-color: #ECECEC;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.graph .options .title {
+    line-height: 20px;
+    font-weight: bold;
+    padding-left: 10px;
+    padding-top: 10px;
+    text-align: left;
+}
+
+.graph .options dl {
+    padding: 10px 10px 0 10px;
+    line-height: 22px;
+    float: left;
+}
+
+.graph .options dt {
+    float: left;
+    width: 60px;
+    height: 22px;
+    font-weight: bold;
+}
+
+.graph .options dd {
+    /* margin-left: 20px; */
+    height: 25px;
+    float: right;
+    width: 73px;
+}
+
+.graph .options select {
+    float: right;
+    width: 80px;
+    border: 1px solid silver;
+}
+
+.graph .options .x {
+    background-color: #CB4B4B;
+    padding: 3px;
+    color: #fff;
+    height: 12px;
+    float: right;
+    border-radius: 3px;
+    line-height: 12px;
+    margin-bottom: 2px;
+}
+
+.graph .options .y {
+    background-color: #C0D800;
+    padding: 3px;
+    color: #fff;
+    height: 12px;
+    float: right;
+    border-radius: 3px;
+    line-height: 12px;
+    margin-bottom: 2px;
+}
+
+.graph .options .z {
+    background-color: #00A8F0;
+    padding: 3px;
+    color: #fff;
+    height: 12px;
+    float: right;
+    border-radius: 3px;
+    line-height: 12px;
+    margin-bottom: 2px;
+}
+
+.graph .options .x, .graph .options .y, .graph .options .z {
+    text-align: right;
+}
+/* SVG classes*/
+.graph svg {
+    float: left;
+    width: calc(100% - 180px);
+    height: 140px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.graph .grid .tick {
+    stroke: silver;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}
+
+.graph .grid path {
+    stroke-width: 0;
+}
+
+.graph .data .line {
+    stroke-width: 2px;
+    fill: none;
+}
+
+.graph .axis path, .graph .axis line {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}
+
+.graph text {
+    stroke: none;
+    fill: #828885;
+    font-size: 10px;
+}
+
+.graph .line:nth-child(1) {
+    stroke: #CB4B4B;
+}
+
+.graph .line:nth-child(2) {
+    stroke: #C0D800;
+}
+
+.graph .line:nth-child(3) {
+    stroke: #00A8F0;
+}

@@ -39,4 +39,7 @@ function imu_packet_data(packet) {
     imuData.a[0],     // ax
     imuData.a[1],     // ay
     imuData.a[2]);    // az
+
+  // Update graphs
+  update_imu_graphs();
 }
