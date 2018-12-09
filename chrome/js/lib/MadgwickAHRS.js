@@ -24,12 +24,12 @@ var Madgwick = {
   q3: 0.0,
 
   init: function(freq) {
-    self.sampleFreq=freq;
-    self.beta=1;
-    self.q0=1.0;
-    self.q1=0.0;
-    self.q2=0.0;
-    self.q3=0.0;
+    this.sampleFreq=freq;
+    this.beta=1;
+    this.q0=1.0;
+    this.q1=0.0;
+    this.q2=0.0;
+    this.q3=0.0;
   },
 
 //====================================================================================================
@@ -85,10 +85,10 @@ var Madgwick = {
         s3 *= recipNorm;
 
         // Apply feedback step
-        qDot1 -= beta * s0;
-        qDot2 -= beta * s1;
-        qDot3 -= beta * s2;
-        qDot4 -= beta * s3;
+        qDot1 -= this.beta * s0;
+        qDot2 -= this.beta * s1;
+        qDot3 -= this.beta * s2;
+        qDot4 -= this.beta * s3;
     }
 
     // Integrate rate of change of quaternion to yield quaternion
@@ -185,10 +185,10 @@ var Madgwick = {
         s3 *= recipNorm;
 
         // Apply feedback step
-        qDot1 -= beta * s0;
-        qDot2 -= beta * s1;
-        qDot3 -= beta * s2;
-        qDot4 -= beta * s3;
+        qDot1 -= this.beta * s0;
+        qDot2 -= this.beta * s1;
+        qDot3 -= this.beta * s2;
+        qDot4 -= this.beta * s3;
     }
 
     // Integrate rate of change of quaternion to yield quaternion
