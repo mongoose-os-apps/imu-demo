@@ -9,20 +9,20 @@ var Scene = {
   cube:        0,
 
   addCamera: function() {
-    self.camera = new THREE.PerspectiveCamera(30, canvas.scrollWidth/canvas.scrollHeight, 0.1, 1000);
-    self.camera.position.x = 1.4;
-    self.camera.position.y = -1.5;
-    self.camera.position.z = 1.5;
-    self.camera.up = new THREE.Vector3(0, 0, 1);
-    self.camera.lookAt(new THREE.Vector3(0.2, 0.2, 0.2));
+    this.camera = new THREE.PerspectiveCamera(30, canvas.scrollWidth/canvas.scrollHeight, 0.1, 1000);
+    this.camera.position.x = 1.4;
+    this.camera.position.y = -1.5;
+    this.camera.position.z = 1.5;
+    this.camera.up = new THREE.Vector3(0, 0, 1);
+    this.camera.lookAt(new THREE.Vector3(0.2, 0.2, 0.2));
   },
 
   addLights: function() {
-    self.hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
-    self.hemiLight.color.setHSL(0.6, 1, 0.6);
-    self.hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-    self.hemiLight.position.set(0, 100, 0);
-    self.scene.add(hemiLight);
+    this.hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+    this.hemiLight.color.setHSL(0.6, 1, 0.6);
+    this.hemiLight.groundColor.setHSL(0.095, 1, 0.75);
+    this.hemiLight.position.set(0, 100, 0);
+    this.scene.add(this.hemiLight);
   },
 
   addCube: function() {
@@ -54,29 +54,21 @@ var Scene = {
       }),
     ];
     material = new THREE.MeshFaceMaterial(materials);
-    self.cube = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.6, 0.3), material);
-    self.cube.position.x = 0.2;
-    self.cube.position.y = 0.2;
-    self.cube.position.z = 0.2;
-    self.scene.add(cube);
+    this.cube = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.6, 0.3), material);
+    this.cube.position.x = 0.2;
+    this.cube.position.y = 0.2;
+    this.cube.position.z = 0.2;
+    this.scene.add(this.cube);
   },
 
   init: function(dom_elem) {
-    self.canvas = document.getElementById(dom_elem);
-    self.renderer = new THREE.WebGLRenderer({ canvas: self.canvas });
-    self.renderer.setSize(self.canvas.scrollWidth, self.canvas.scrollHeight);
-    self.scene = new THREE.Scene();
+    this.canvas = document.getElementById(dom_elem);
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
+    this.renderer.setSize(this.canvas.scrollWidth, this.canvas.scrollHeight);
+    this.scene = new THREE.Scene();
 
     this.addCamera();
     this.addLights();
     this.addCube();
-
-    // Render function.
-    var render = function () {
-      requestAnimationFrame(render);
-      renderer.render(self.scene, self.camera);
-    };
-    render();
-  }
+  },
 };
-

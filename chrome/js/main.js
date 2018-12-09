@@ -13,10 +13,17 @@ Serial.getDevices(function (ports) {
   }
 });
 
+
 // THREE renderer
 Scene.init("canvas");
+function animate () {
+  requestAnimationFrame(animate);
+  Scene.renderer.render(Scene.scene, Scene.camera);
+}
+animate();
+
 
 // Update Cube from Madgwick Quaternion
 setInterval(function () {
-    cube.quaternion.set(Madgwick.q1, Madgwick.q2, Madgwick.q3, Madgwick.q0);
+    Scene.cube.quaternion.set(Madgwick.q1, Madgwick.q2, Madgwick.q3, Madgwick.q0);
 }, 1000/Madgwick.sampleFreq);
