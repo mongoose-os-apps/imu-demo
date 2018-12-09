@@ -3,11 +3,12 @@
 var SerialStats = {
     previous_received: 0,
     previous_sent:     0,
+    timer:             -1,
 
-    initialize: function() {
+    start: function() {
         var self = this;
 
-        self.main_timer_reference = setInterval(function() {
+        self.timer = setInterval(function() {
             self.update();
         }, 250);
     },
@@ -21,13 +22,17 @@ var SerialStats = {
         $('div#footer span.serial_up').text('U: '+up+'%');
         $('div#footer span.serial_down').text('D: '+down+'%');
     },
-    reset: function() {
-        this.previous_received = 0;
-        this.previous_sent = 0;
+    stop: function() {
+      this.previous_received = 0;
+      this.previous_sent = 0;
+      if (this.timer != -1) {
+        clearInterval(this.timer);
+        this.timer = -1;
+      }
+      $('div#footer span.serial_up').text('U: -');
+      $('div#footer span.serial_down').text('D: -');
     }
 };
-
-SerialStats.initialize();
 
 var Serial = {
 	connected:       false,
@@ -198,6 +203,7 @@ var Serial = {
             // instead we will rise canceled flag which will prevent connect from continueing further after being canceled
             self.openCanceled = true;
         }
+        SerialStats.stop();
     },
     getDevices: function (callback) {
         chrome.serial.getDevices(function (devices_array) {
@@ -205,8 +211,6 @@ var Serial = {
             devices_array.forEach(function (device) {
                 devices.push(device.path);
             });
-
-          // TODO(pim): Populate
             callback(devices);
         });
     },
@@ -322,6 +326,7 @@ var Serial = {
       if (openInfo) {
           this.onReceive.addListener(callback);
           $('div#hud td.port').text(this.path);
+          SerialStats.start();
       }
     },
     emptyOutputBuffer: function () {
@@ -378,5 +383,3 @@ var onReceiveCallback = function (info) {
         read_serial(info.data);
     }
 };
-
-Serial.connect("/dev/ttyUSB1", {bitrate: 115200}, onReceiveCallback);

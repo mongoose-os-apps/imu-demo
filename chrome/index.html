@@ -8,7 +8,18 @@
     <div id="header">
       <div id="ports">
         <select id="port">
+          <option value="none">-</option>
           <!-- port list gets generated here -->
+        </select>
+      </div>
+      <div id="portspeeds">
+        <select id="portspeed">
+          <option value="921600">921600</option>
+          <option value="460800">460800</option>
+          <option value="115200" selected="selected">115200</option>
+          <option value="38400">38400</option>
+          <option value="19200">19200</option>
+          <option value="9600">9600</option>
         </select>
       </div>
     </div>
@@ -57,6 +68,7 @@
     <script type="text/javascript" src="js/serial.js"></script>
     <script type="text/javascript" src="js/imu_packet.js"></script>
     <script type="text/javascript" src="js/scene.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
   </body>
 </html>
 
