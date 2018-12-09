@@ -94,10 +94,9 @@ var mx = 0.0;
 var my = 0.0;
 var mz = 0.0;
 
-var samplePeriodMillis = 1000 / sampleFreq;
+Madgwick.init(100);
 
 function scene_update() {
-
     ax = imuData.a[0];
     ay = imuData.a[1];
     az = imuData.a[2];
@@ -111,18 +110,14 @@ function scene_update() {
     mx = 0.0;
     my = 0.0;
     mz = 0.0;
-    madgwickAHRSupdate(gx, gy, gz, ax, ay, az, mx, my, mz);
-    cube.quaternion.set(q1, q2, q3, q0);
+    Madgwick.updateAHRS(gx, gy, gz, ax, ay, az, mx, my, mz);
 
-    if ((q0 === NaN) || (q1 === NaN) || (q2 === NaN) || (q3 === NaN)) {
-        console.log ("Exploded!");
-    }
+    cube.quaternion.set(Madgwick.q1, Madgwick.q2, Madgwick.q3, Madgwick.q0);
 }
 
 // Find intersections
 var projector = new THREE.Projector();
-var count = 0;
 
 setInterval(function () {
     scene_update();
-}, samplePeriodMillis);
+}, 1000/Madgwick.sampleFreq);
