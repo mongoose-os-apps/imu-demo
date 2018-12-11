@@ -26,9 +26,10 @@ static void emit_imu_packet_stats(void *user_data) {
   now  = mg_time();
   freq = (counter - last_counter) / (now - last_counter_emission);
 
-  write(1, "$P>A", 3);
+  write(1, "$P>A", 4);
   write(1, &counter, 4);
   write(1, &freq, 4);
+//  printf("\r\nFrequency: %f Hz\r\n", freq);
 
   last_counter          = counter;
   last_counter_emission = now;
@@ -42,7 +43,7 @@ static void emit_imu_packet_info(void *user_data) {
   g = mgos_imu_gyroscope_get_name(imu);
   m = mgos_imu_magnetometer_get_name(imu);
 
-  write(1, "$P>B", 3);
+  write(1, "$P>B", 4);
   write(1, a, strlen(a));
   write(1, ",", 1);
   write(1, g, strlen(a));
@@ -52,7 +53,7 @@ static void emit_imu_packet_info(void *user_data) {
 }
 
 static void emit_imu_packet_data(struct imu_packet *p) {
-  write(1, "$P>C", 3);
+  write(1, "$P>C", 4);
   write(1, p, sizeof(struct imu_packet));
   return;
 }
@@ -62,7 +63,7 @@ static void emit_imu_packet_quat(struct mgos_imu_madgwick *filter) {
 
   mgos_imu_madgwick_get_quaternion(filter, &q0, &q1, &q2, &q3);
 
-  write(1, "$P>D", 3);
+  write(1, "$P>D", 4);
   write(1, &q0, 4);
   write(1, &q1, 4);
   write(1, &q2, 4);
@@ -75,7 +76,7 @@ static void emit_imu_packet_angles(struct mgos_imu_madgwick *filter) {
 
   mgos_imu_madgwick_get_angles(filter, &r, &p, &y);
 
-  write(1, "$P>D", 3);
+  write(1, "$P>D", 4);
   write(1, &r, 4);
   write(1, &p, 4);
   write(1, &y, 4);
