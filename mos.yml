@@ -1,7 +1,6 @@
 author: Pim van Pelt <pim@ipng.nl>
 description: Demonstration of IMU library
 version: 1.0
-platforms: [esp32, esp8266]
 platform: esp32
 
 libs_version: ${mos.version}
