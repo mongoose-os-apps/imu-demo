@@ -17,7 +17,7 @@
 var Madgwick = {
 
   sampleFreq: 100.0,  // sample frequency in Hz
-  beta: 1,
+  beta: 0.1,
   q0: 1.0,
   q1: 0.0,
   q2: 0.0,

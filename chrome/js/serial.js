@@ -361,6 +361,10 @@ function read_serial(buffer) {
                 imu_packet_stats(inputString.slice(5));
               } else if (inputString.startsWith("$P>3:")) {
                 imu_packet_data(inputString.slice(5));
+              } else if (inputString.startsWith("$P>4:")) {
+                imu_packet_quat(inputString.slice(5));
+              } else if (inputString.startsWith("$P>5:")) {
+                imu_packet_angles(inputString.slice(5));
               } else {
                 console.log("SERIAL: Unknown Input:", inputString);
               }

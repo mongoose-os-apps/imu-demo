@@ -3,7 +3,7 @@
 // Initialize Madgwick filter at 100Hz.
 Madgwick.init(100);
 
-Serial.connect("/dev/ttyUSB1", {bitrate: 115200}, onReceiveCallback); // in serial.js
+Serial.connect("/dev/ttyUSB0", {bitrate: 115200}, onReceiveCallback); // in serial.js
 
 // Populate the serial ports dropdown
 Serial.getDevices(function (ports) {
@@ -25,5 +25,6 @@ animate();
 
 // Update Cube from Madgwick Quaternion
 setInterval(function () {
-    Scene.cube.quaternion.set(Madgwick.q1, Madgwick.q2, Madgwick.q3, Madgwick.q0);
+//    Scene.cube.quaternion.set(Madgwick.q1, Madgwick.q2, Madgwick.q3, Madgwick.q0);
+    Scene.cube.quaternion.set(imuQuat.q[1], imuQuat.q[2], imuQuat.q[3], imuQuat.q[0]);
 }, 1000/Madgwick.sampleFreq);

@@ -421,13 +421,12 @@ var samples_mag_i = 0;
 var accel_data = initDataArray(3);
 var gyro_data = initDataArray(3);
 var mag_data = initDataArray(3);
-var accelHelpers = initGraphHelpers('#accel', samples_accel_i, [-2, 2]);
-var gyroHelpers = initGraphHelpers('#gyro', samples_gyro_i, [-40, 40]);
-var magHelpers = initGraphHelpers('#mag', samples_mag_i, [-500, 500]);
+var accelHelpers = initGraphHelpers('#accel', samples_accel_i, [-0.5, 0.5]); // m/s/s (1G == 9.807m/s/s)
+var gyroHelpers = initGraphHelpers('#gyro', samples_gyro_i, [-0.05, 0.05]);  // Rads/sec (2000dps == 34.9Rad/sec)
+var magHelpers = initGraphHelpers('#mag', samples_mag_i, [-500, 500]);   // uTesla
 
 function update_imu_graphs() {
   updateGraphHelperSize(accelHelpers);
-
   samples_accel_i = addSampleToData(accel_data, samples_accel_i, imuData.a);
   drawGraph(accelHelpers, accel_data, samples_accel_i);
   raw_data_text_ements.x[0].text(imuData.a[0].toFixed(2));
@@ -435,7 +434,6 @@ function update_imu_graphs() {
   raw_data_text_ements.z[0].text(imuData.a[2].toFixed(2));
 
   updateGraphHelperSize(gyroHelpers);
-
   samples_gyro_i = addSampleToData(gyro_data, samples_gyro_i, imuData.g);
   drawGraph(gyroHelpers, gyro_data, samples_gyro_i);
   raw_data_text_ements.x[1].text(imuData.g[0].toFixed(2));
@@ -443,11 +441,9 @@ function update_imu_graphs() {
   raw_data_text_ements.z[1].text(imuData.g[2].toFixed(2));
 
   updateGraphHelperSize(magHelpers);
-
   samples_mag_i = addSampleToData(mag_data, samples_mag_i, imuData.m);
   drawGraph(magHelpers, mag_data, samples_mag_i);
   raw_data_text_ements.x[2].text(imuData.m[0].toFixed(2));
   raw_data_text_ements.y[2].text(imuData.m[1].toFixed(2));
   raw_data_text_ements.z[2].text(imuData.m[2].toFixed(2));
-
 }
