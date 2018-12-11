@@ -21,12 +21,15 @@ static void emit_imu_packet_stats(void *user_data) {
   uint32_t        counter;
   double          now;
   float           freq;
+  uint8_t         len;
 
   mgos_imu_madgwick_get_counter(s_filter, &counter);
   now  = mg_time();
   freq = (counter - last_counter) / (now - last_counter_emission);
 
+  len = 8;
   write(1, "$P>A", 4);
+  write(1, &len, 1);
   write(1, &counter, 4);
   write(1, &freq, 4);
 //  printf("\r\nFrequency: %f Hz\r\n", freq);
@@ -38,32 +41,42 @@ static void emit_imu_packet_stats(void *user_data) {
 static void emit_imu_packet_info(void *user_data) {
   struct mgos_imu *imu = (struct mgos_imu *)user_data;
   const char *     a, *g, *m;
+  uint8_t          len;
 
   a = mgos_imu_accelerometer_get_name(imu);
   g = mgos_imu_gyroscope_get_name(imu);
   m = mgos_imu_magnetometer_get_name(imu);
 
+  len = strlen(a) + strlen(g) + strlen(m) + 2;
   write(1, "$P>B", 4);
+  write(1, &len, 1);
   write(1, a, strlen(a));
   write(1, ",", 1);
-  write(1, g, strlen(a));
+  write(1, g, strlen(g));
   write(1, ",", 1);
-  write(1, m, strlen(a));
+  write(1, m, strlen(m));
   return;
 }
 
 static void emit_imu_packet_data(struct imu_packet *p) {
+  uint8_t len;
+
+  len = sizeof(struct imu_packet);
   write(1, "$P>C", 4);
+  write(1, &len, 1);
   write(1, p, sizeof(struct imu_packet));
   return;
 }
 
 static void emit_imu_packet_quat(struct mgos_imu_madgwick *filter) {
-  float q0, q1, q2, q3;
+  float   q0, q1, q2, q3;
+  uint8_t len;
 
   mgos_imu_madgwick_get_quaternion(filter, &q0, &q1, &q2, &q3);
 
+  len = 16;
   write(1, "$P>D", 4);
+  write(1, &len, 1);
   write(1, &q0, 4);
   write(1, &q1, 4);
   write(1, &q2, 4);
@@ -72,11 +85,14 @@ static void emit_imu_packet_quat(struct mgos_imu_madgwick *filter) {
 }
 
 static void emit_imu_packet_angles(struct mgos_imu_madgwick *filter) {
-  float r, p, y;
+  float   r, p, y;
+  uint8_t len;
 
   mgos_imu_madgwick_get_angles(filter, &r, &p, &y);
 
-  write(1, "$P>D", 4);
+  len = 12;
+  write(1, "$P>E", 4);
+  write(1, &len, 1);
   write(1, &r, 4);
   write(1, &p, 4);
   write(1, &y, 4);
