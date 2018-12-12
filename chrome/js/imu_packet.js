@@ -67,3 +67,78 @@ function imu_packet_data(packet) {
   // Update graphs
   update_imu_graphs();
 }
+
+var IMUPacket = {
+  state: 0,
+  packetType: "",
+  packetLength: 0,
+  packetIndex: 0,
+  packet: null,
+
+  readSerial: function(inBytes) {
+    for (var i = 0; i < inBytes.length; i++) {
+      // Packets start with "$P>" (36,80,62), then a type (68), then a length (16), and then $(length) bytes.
+      switch(this.state) {
+        case 0:
+          this.packetType="";
+          this.packetLength=0;
+          this.packetIndex=0;
+          this.packet=null;
+          if (inBytes[i] === 36) {
+            this.state=1;
+          }
+          break;
+        case 1:
+          if (inBytes[i] === 80) {
+            this.state=2;
+          } else {
+            this.state=0;
+          }
+          break;
+        case 2:
+          if (inBytes[i] === 62) {
+            this.state=3;
+          } else {
+            this.state=0;
+          }
+          break;
+        case 3:
+          this.packetType = inBytes[i];
+          this.state=4;
+          break;
+        case 4:
+          this.packetLength = inBytes[i];
+          this.packet = new Uint8Array(this.packetLength);
+          this.state=5;
+          break;
+        case 5:
+          this.packet[this.packetIndex]=inBytes[i];
+          this.packetIndex++;
+          if (this.packetIndex == this.packetLength) {
+            // console.log("IMUPacket: Packet complete. type=" + this.packetType + ", len=", this.packetLength);
+            switch(this.packetType) {
+              case 65: this.handleStats(); break;
+              case 66: this.handleInfo(); break;
+              case 67: this.handleIMUData(); break;
+              case 68: this.handleQuaternion(); break;
+              case 69: this.handleAngles(); break;
+            }
+            this.state=0;
+          }
+          break;
+      }
+    }
+  },
+  handleStats: function() {
+  },
+  handleInfo: function() {
+    var s = new TextDecoder("utf-8").decode(this.packet);
+    console.log(s);
+  },
+  handleIMUData: function() {
+  },
+  handleQuaternion: function() {
+  },
+  handleAngles: function() {
+  },
+};

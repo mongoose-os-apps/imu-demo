@@ -335,55 +335,8 @@ var Serial = {
     }
 };
 
-var inputString = "";
-
-function read_serial(buffer) {
-    var lineStart = 0,
-        lineEnd = 0,
-        i,
-        j,
-        inBytes = new Int8Array(buffer);
-
-    // Scan all input bytes looking for a line ending
-    for (i = 0; i < inBytes.length; i += 1) {
-        // Do we have a line ending here?
-        if ((inBytes[i] === 0x0d) || (inBytes[i] === 0x0a)) {
-            lineEnd = i;
-
-            // Convert bytes of the line to a string
-            for (j = lineStart; j < lineEnd; j += 1) {
-                inputString += String.fromCharCode(inBytes[j]);
-            }
-            if (inputString.length>0) {
-              if (inputString.startsWith("$P>1:")) {
-                imu_packet_info(inputString.slice(5));
-              } else if (inputString.startsWith("$P>2:")) {
-                imu_packet_stats(inputString.slice(5));
-              } else if (inputString.startsWith("$P>3:")) {
-                imu_packet_data(inputString.slice(5));
-              } else if (inputString.startsWith("$P>4:")) {
-                imu_packet_quat(inputString.slice(5));
-              } else if (inputString.startsWith("$P>5:")) {
-                imu_packet_angles(inputString.slice(5));
-              } else {
-                console.log("SERIAL: Unknown Input:", inputString);
-              }
-            }
-            inputString = "";
-            lineStart = lineEnd + 1;
-        }
-    }
-    // Are there any trailing bytes?
-    if (lineStart !== inBytes.length) {
-        // Convert trailing bytes string, a part line ready for next call.
-        for (i = lineEnd + 1; i < inBytes.length; i += 1) {
-            inputString += String.fromCharCode(inBytes[i]);
-        }
-    }
-}
-
 var onReceiveCallback = function (info) {
     if (info.connectionId === Serial.connectionId && info.data) {
-        read_serial(info.data);
+        IMUPacket.readSerial(new Uint8Array(info.data));
     }
 };
