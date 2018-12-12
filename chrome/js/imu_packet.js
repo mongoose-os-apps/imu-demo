@@ -58,6 +58,7 @@ var IMUPacket = {
             switch(this.packetType) {
               case 65: this.handleIMUData(); break;
               case 66: this.handleInfo(); break;
+              case 67: this.handleLog(); break;
             }
             this.state=0;
           }
@@ -113,5 +114,9 @@ var IMUPacket = {
     $('span.imu_roll').text(imuAngles.roll.toFixed(1))
     $('span.imu_pitch').text(imuAngles.pitch.toFixed(1))
     $('span.imu_yaw').text(imuAngles.yaw.toFixed(1))
+  },
+  handleLog: function() {
+    var s = new TextDecoder("utf-8").decode(this.packet);
+    console.log("IMU> " + s);
   },
 };

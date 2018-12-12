@@ -9,6 +9,10 @@
 
 struct mgos_imu_madgwick *s_filter = NULL;
 
+static void emit_imu_packet_data(struct imu_packet *p);
+static void emit_imu_packet_info(void *user_data);
+static void emit_imu_packet_log(const char *msg);
+
 static void emit_imu_packet_data(struct imu_packet *p) {
   uint8_t packet[4 + 1 + sizeof(struct imu_packet)]; // HEADER + DATALEN + DATA
 
@@ -17,7 +21,7 @@ static void emit_imu_packet_data(struct imu_packet *p) {
   packet[2] = '>';
   packet[3] = 'A';
   packet[4] = sizeof(struct imu_packet);
-  memcpy(packet+5, p, packet[4]);
+  memcpy(packet + 5, p, packet[4]);
   mgos_uart_write(0, packet, sizeof(packet));
   return;
 }
@@ -39,7 +43,18 @@ static void emit_imu_packet_info(void *user_data) {
   mgos_uart_write(0, g, strlen(g));
   mgos_uart_write(0, ",", 1);
   mgos_uart_write(0, m, strlen(m));
+
+  emit_imu_packet_log("Hello world");
   return;
+}
+
+static void emit_imu_packet_log(const char *msg) {
+  uint8_t len;
+
+  len = strlen(msg);
+  mgos_uart_write(0, "$P>C", 4);
+  mgos_uart_write(0, &len, 1);
+  mgos_uart_write(0, msg, strlen(msg));
 }
 
 static void imu_cb(void *user_data) {
