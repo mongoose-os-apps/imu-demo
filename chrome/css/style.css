@@ -44,6 +44,58 @@
   height:             420px;
   background-color:   black;
   border: 1px solid #ccc;
+  z-index: 1;
+  position: absolute;
+}
+
+#hud {
+  color:             white;
+  opacity:             1.0;
+  position:         relative;
+  width: 100%;
+  z-index: 2;
+  left: 0px;
+  top: 0px;
+  position: absolute;
+  overflow: visible;
+}
+
+span.hud_left {
+  color: white;
+  width: 100px;
+  margin: 4px;
+  left: 0px;
+  top: 0px;
+  position: absolute;
+}
+
+span.hud_center {
+  width: 100px;
+  color: white;
+  margin: 4px;
+  left: 150px;
+  top: 0px;
+  position: absolute;
+}
+
+span.hud_right {
+  width: 100px;
+  color: white;
+  margin: 4px;
+  right: 0px;
+  top: 0px;
+  position: absolute;
+}
+
+#info {
+  color:             white;
+  opacity:             0.7;
+  position:         relative;
+  width: 100%;
+  border: dotted red 1px;
+  left: 0px;
+  bottom: 0px;
+  position: absolute;
 }
 
 #footer {
@@ -51,14 +103,7 @@
   height:            100px;
   color:             white;
   background-color: #39f;
-  border: 1px solid #ccc;
   padding:             3px;
-}
-
-#hud {
-  color:             white;
-  opacity:             0.7;
-  position:         static;
 }
 
 /* For a div going fullscreen in a chrome app, maximize height and width */

@@ -197,7 +197,7 @@ var Serial = {
                 if (result) {
                     console.log('SERIAL: Connection with ID: ' + self.connectionId + ' closed, Sent: ' + self.bytesSent + ' bytes, Received: ' + self.bytesReceived + ' bytes');
                   self.path = '';
-                  $('div#hud td.port').text(this.path);
+                  $('div#info td.port').text(this.path);
                 } else {
                     console.log('SERIAL: Failed to close connection with ID: ' + self.connectionId + ' closed, Sent: ' + self.bytesSent + ' bytes, Received: ' + self.bytesReceived + ' bytes');
                 }
@@ -334,7 +334,7 @@ var Serial = {
     open: function(openInfo, callback) {
       if (openInfo) {
           this.onReceive.addListener(callback);
-          $('div#hud td.port').text(this.path);
+          $('div#info td.port').text(this.path);
           SerialStats.start();
       }
     },

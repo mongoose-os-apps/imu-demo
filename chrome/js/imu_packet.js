@@ -70,9 +70,9 @@ var IMUPacket = {
     imuInfo.gyroscope.type = s[0];
     imuInfo.accelerometer.type = s[1];
     imuInfo.magnetometer.type = s[2];
-    $('div#hud td.imu_accel_type').text(imuInfo.accelerometer.type)
-    $('div#hud td.imu_gyro_type').text(imuInfo.gyroscope.type)
-    $('div#hud td.imu_mag_type').text(imuInfo.magnetometer.type)
+    $('div#info td.imu_accel_type').text(imuInfo.accelerometer.type)
+    $('div#info td.imu_gyro_type').text(imuInfo.gyroscope.type)
+    $('div#info td.imu_mag_type').text(imuInfo.magnetometer.type)
   },
   handleIMUData: function() {
     var view = new DataView(this.packet.buffer);
@@ -89,9 +89,9 @@ var IMUPacket = {
     imuQuat.q[1] = view.getFloat32(40, true);
     imuQuat.q[2] = view.getFloat32(44, true);
     imuQuat.q[3] = view.getFloat32(48, true);
-    imuAngles.roll = view.getFloat32(52, true);
-    imuAngles.pitch = view.getFloat32(56, true);
-    imuAngles.yaw = view.getFloat32(60, true);
+    imuAngles.roll = view.getFloat32(52, true) * 180 / Math.PI;
+    imuAngles.pitch = view.getFloat32(56, true) * 180 / Math.PI;
+    imuAngles.yaw = view.getFloat32(60, true) * 180 / Math.PI;
     this.count = view.getUint32(64, true);
 
     // Update Madgwick filter
@@ -108,5 +108,10 @@ var IMUPacket = {
 
     // Update graphs
     update_imu_graphs();
+
+    // Update roll/pitch/yaw
+    $('span.imu_roll').text(imuAngles.roll.toFixed(1))
+    $('span.imu_pitch').text(imuAngles.pitch.toFixed(1))
+    $('span.imu_yaw').text(imuAngles.yaw.toFixed(1))
   },
 };
