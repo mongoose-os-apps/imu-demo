@@ -2,27 +2,12 @@
 #include "mgos_i2c.h"
 #include "mgos_imu.h"
 #include "madgwick.h"
+#include "imupacket.h"
 
 #define IMU_HZ                    100
 #define IMU_PACKET_INFO_PERIOD    5000     // msec
 
 struct mgos_imu_madgwick *s_filter = NULL;
-
-struct imu_packet {
-  // IMU Data
-  float    ax, ay, az;
-  float    gx, gy, gz;
-  float    mx, my, mz;
-
-  // Quaternion
-  float    q0, q1, q2, q3;
-
-  // Roll/Pitch/Yaw in Rads
-  float    roll, pitch, yaw;
-
-  // Filter counter
-  uint32_t filter_counter;
-};
 
 static void emit_imu_packet_info(void *user_data) {
   struct mgos_imu *imu = (struct mgos_imu *)user_data;
