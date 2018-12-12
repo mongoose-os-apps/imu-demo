@@ -76,6 +76,7 @@ var IMUPacket = {
   packet: null,
 
   readSerial: function(inBytes) {
+//    console.log("SERIAL Read: " + inBytes.length);
     for (var i = 0; i < inBytes.length; i++) {
       // Packets start with "$P>" (36,80,62), then a type (68), then a length (16), and then $(length) bytes.
       switch(this.state) {
@@ -115,13 +116,10 @@ var IMUPacket = {
           this.packet[this.packetIndex]=inBytes[i];
           this.packetIndex++;
           if (this.packetIndex == this.packetLength) {
-            // console.log("IMUPacket: Packet complete. type=" + this.packetType + ", len=", this.packetLength);
+            console.log("IMUPacket: Packet complete. type=" + this.packetType + ", len=", this.packetLength);
             switch(this.packetType) {
-              case 65: this.handleStats(); break;
+              case 65: this.handleIMUData(); break;
               case 66: this.handleInfo(); break;
-              case 67: this.handleIMUData(); break;
-              case 68: this.handleQuaternion(); break;
-              case 69: this.handleAngles(); break;
             }
             this.state=0;
           }
@@ -129,16 +127,12 @@ var IMUPacket = {
       }
     }
   },
-  handleStats: function() {
-  },
   handleInfo: function() {
     var s = new TextDecoder("utf-8").decode(this.packet);
     console.log(s);
   },
   handleIMUData: function() {
-  },
-  handleQuaternion: function() {
-  },
-  handleAngles: function() {
+    var c = this.packet[64] + 256 * this.packet[65] + 65536 * this.packet[66] + 16777216 * this.packet[67];
+    console.log("count=" + c);
   },
 };
