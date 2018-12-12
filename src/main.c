@@ -81,6 +81,39 @@ static void imu_cb(void *user_data) {
   emit_imu_packet_data(&imu_packet);
 }
 
+static void uart_dispatcher(int uart_no, void *arg) {
+  static struct mbuf lb    = { 0 };
+  size_t             rx_av = mgos_uart_read_avail(uart_no);
+  char *        nl;
+  size_t        llen;
+  struct mg_str line;
+
+  if (rx_av == 0) {
+    return;
+  }
+  mgos_uart_read_mbuf(uart_no, &lb, rx_av);
+  nl = (char *)mg_strchr(mg_mk_str_n(lb.buf, lb.len), '\n');
+  if (nl == NULL) {
+    return;
+  }
+  *nl  = '\0';
+  llen = nl - lb.buf;
+  line = mg_mk_str_n(lb.buf, llen);
+
+  /* Also strip off CR */
+  if (nl > lb.buf && *(nl - 1) == '\r') {
+    *(nl - 1) = '\0';
+    line.len--;
+  }
+
+  LOG(LL_INFO, ("UART%d> '%.*s'", uart_no, (int)line.len, line.p));
+  emit_imu_packet_log("Serial received");
+
+  /* Remove the line data from the buffer. */
+  mbuf_remove(&lb, llen + 1);
+  (void)arg;
+}
+
 enum mgos_app_init_result mgos_app_init(void) {
   struct mgos_i2c *i2c = mgos_i2c_get_global();
   struct mgos_imu *imu = mgos_imu_create();
@@ -108,6 +141,9 @@ enum mgos_app_init_result mgos_app_init(void) {
   if (!(s_filter = mgos_imu_madgwick_create())) {
     LOG(LL_ERROR, ("Cannot create magnetometer on IMU"));
   }
+
+  mgos_uart_set_dispatcher(0, uart_dispatcher, NULL /* arg */);
+  mgos_uart_set_rx_enabled(0, true);
 
   // Install timers
   mgos_set_timer(1000 / IMU_HZ, true, imu_cb, imu);

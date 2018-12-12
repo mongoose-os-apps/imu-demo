@@ -232,6 +232,14 @@ var Serial = {
     setControlSignals: function (signals, callback) {
         chrome.serial.setControlSignals(this.connectionId, signals, callback);
     },
+    sendString: function(str) {
+        var buf=new ArrayBuffer(str.length);
+        var bufView=new Uint8Array(buf);
+        for (var i=0; i<str.length; i++) {
+          bufView[i]=str.charCodeAt(i);
+        }
+        this.send(buf, null);
+    },
     send: function (data, callback) {
         var self = this;
         this.outputBuffer.push({'data': data, 'callback': callback});
