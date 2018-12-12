@@ -5,7 +5,6 @@
 #include <termios.h>
 #include <unistd.h>
 #include "hexdump.h"
-#include "mongoose/cs_crc32.h"
 
 char *portname = "/dev/ttyUSB0";
 
