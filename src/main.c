@@ -9,6 +9,19 @@
 
 struct mgos_imu_madgwick *s_filter = NULL;
 
+static void emit_imu_packet_data(struct imu_packet *p) {
+  uint8_t packet[4 + 1 + sizeof(struct imu_packet)]; // HEADER + DATALEN + DATA
+
+  packet[0] = '$';
+  packet[1] = 'P';
+  packet[2] = '>';
+  packet[3] = 'A';
+  packet[4] = sizeof(struct imu_packet);
+  memcpy(packet+5, p, packet[4]);
+  mgos_uart_write(0, packet, sizeof(packet));
+  return;
+}
+
 static void emit_imu_packet_info(void *user_data) {
   struct mgos_imu *imu = (struct mgos_imu *)user_data;
   const char *     a, *g, *m;
@@ -19,23 +32,13 @@ static void emit_imu_packet_info(void *user_data) {
   m = mgos_imu_magnetometer_get_name(imu);
 
   len = strlen(a) + strlen(g) + strlen(m) + 2;
-  write(1, "$P>B", 4);
-  write(1, &len, 1);
-  write(1, a, strlen(a));
-  write(1, ",", 1);
-  write(1, g, strlen(g));
-  write(1, ",", 1);
-  write(1, m, strlen(m));
-  return;
-}
-
-static void emit_imu_packet_data(struct imu_packet *p) {
-  uint8_t len;
-
-  len = sizeof(struct imu_packet);
-  write(1, "$P>A", 4);
-  write(1, &len, 1);
-  write(1, p, sizeof(struct imu_packet));
+  mgos_uart_write(0, "$P>B", 4);
+  mgos_uart_write(0, &len, 1);
+  mgos_uart_write(0, a, strlen(a));
+  mgos_uart_write(0, ",", 1);
+  mgos_uart_write(0, g, strlen(g));
+  mgos_uart_write(0, ",", 1);
+  mgos_uart_write(0, m, strlen(m));
   return;
 }
 

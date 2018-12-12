@@ -1,26 +1,34 @@
 'use strict';
 
 var SerialStats = {
-    previous_received: 0,
-    previous_sent:     0,
-    timer:             -1,
+    previous_received:   0,
+    previous_sent:       0,
+    previous_imu_count:  0,
+    previous_time:       0,
+    timer:              -1,
 
     start: function() {
         var self = this;
 
+      this.previous_time = Date.now();
         self.timer = setInterval(function() {
             self.update();
-        }, 250);
+        }, 1000);
     },
     update: function() {
+        var now = Date.now();
         var down = parseInt(((Serial.bytesReceived - this.previous_received) * 10 / Serial.bitrate) * 100);
         var up = parseInt(((Serial.bytesSent - this.previous_sent) * 10 / Serial.bitrate) * 100);
+        var freq = (1000*(IMUPacket.count - this.previous_imu_count)) / (now-this.previous_time);
 
         this.previous_received = Serial.bytesReceived;
         this.previous_sent = Serial.bytesSent;
+        this.previous_imu_count = IMUPacket.count;
+        this.previous_time = now;
 
-        $('div#footer span.serial_up').text('U: '+up+'%');
-        $('div#footer span.serial_down').text('D: '+down+'%');
+        $('div#footer span.serial_up').text(up+'%');
+        $('div#footer span.serial_down').text(down+'%');
+        $('div#footer span.imu_hz').text(freq.toFixed(1)+'Hz');
     },
     stop: function() {
       this.previous_received = 0;
@@ -29,8 +37,9 @@ var SerialStats = {
         clearInterval(this.timer);
         this.timer = -1;
       }
-      $('div#footer span.serial_up').text('U: -');
-      $('div#footer span.serial_down').text('D: -');
+      $('div#footer span.serial_up').text('-');
+      $('div#footer span.serial_down').text('-');
+      $('div#footer span.imu_hz').text('-');
     }
 };
 

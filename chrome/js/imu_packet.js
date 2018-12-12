@@ -1,72 +1,9 @@
 "use strict";
 
 var imuData = {a: [0, 0, 0], g: [0, 0, 0], m: [0, 0, 0]};
-var imuInfo = {};
-var imuStats = {};
+var imuInfo = {accelerometer: {type: ""}, gyroscope: {type: ""}, magnetometer: {type: ""}};
 var imuQuat = {q: [1.0, 0.0, 0.0, 0.0]};
-var imuAngles = {r: 0, p:0, y:0};
-
-function imu_packet_info(packet) {
-  try {
-    imuInfo = JSON.parse(packet);
-    $('div#hud td.imu_rate').text(imuInfo.imu_hz+'Hz')
-    $('div#hud td.imu_accel_type').text(imuInfo.accelerometer.type)
-    $('div#hud td.imu_gyro_type').text(imuInfo.gyroscope.type)
-    $('div#hud td.imu_mag_type').text(imuInfo.magnetometer.type)
-  } catch (ignore) {
-    console.log("Malformed INFO Packet: ", packet);
-  }
-//  console.log("Info: " + packet);
-}
-
-function imu_packet_stats(packet) {
-  try {
-    imuStats = JSON.parse(packet);
-  } catch (ignore) {
-    console.log("Malformed STATS Packet: ", packet);
-  }
-//  console.log("Stats: " + packet);
-}
-
-function imu_packet_quat(packet) {
-  try {
-    imuQuat = JSON.parse(packet);
-  } catch (ignore) {
-    console.log("Malformed QUAT Packet: ", packet);
-  }
-//  console.log("Quat: " + packet);
-}
-
-function imu_packet_angles(packet) {
-  try {
-    imuAngles = JSON.parse(packet);
-  } catch (ignore) {
-    console.log("Malformed ANGLES Packet: ", packet);
-  }
-//  console.log("Angles: " + packet);
-}
-
-function imu_packet_data(packet) {
-  try {
-    imuData = JSON.parse(packet);
-  } catch (ignore) {
-    console.log("Malformed DATA Packet: ", packet);
-  }
-
-  Madgwick.updateAHRS(
-    imuData.g[0],     // gx
-    imuData.g[1],     // gy
-    imuData.g[2],     // gz
-    imuData.a[0],     // ax
-    imuData.a[1],     // ay
-    imuData.a[2],     // az
-    0,                // imuData.m[0],     // mx
-    0,                // imuData.m[1],     // my
-    0);               // imuData.m[2]);    // mz
-
-  // Update graphs
-  update_imu_graphs();
-}
+var imuAngles = {roll: 0, pitch:0, yaw:0};
 
 var IMUPacket = {
   state: 0,
@@ -74,6 +11,7 @@ var IMUPacket = {
   packetLength: 0,
   packetIndex: 0,
   packet: null,
+  count: 0,
 
   readSerial: function(inBytes) {
 //    console.log("SERIAL Read: " + inBytes.length);
@@ -116,7 +54,7 @@ var IMUPacket = {
           this.packet[this.packetIndex]=inBytes[i];
           this.packetIndex++;
           if (this.packetIndex == this.packetLength) {
-            console.log("IMUPacket: Packet complete. type=" + this.packetType + ", len=", this.packetLength);
+            // console.log("IMUPacket: Packet complete. type=" + this.packetType + ", len=", this.packetLength);
             switch(this.packetType) {
               case 65: this.handleIMUData(); break;
               case 66: this.handleInfo(); break;
@@ -128,11 +66,47 @@ var IMUPacket = {
     }
   },
   handleInfo: function() {
-    var s = new TextDecoder("utf-8").decode(this.packet);
-    console.log(s);
+    var s = new TextDecoder("utf-8").decode(this.packet).split(',');
+    imuInfo.gyroscope.type = s[0];
+    imuInfo.accelerometer.type = s[1];
+    imuInfo.magnetometer.type = s[2];
+    $('div#hud td.imu_accel_type').text(imuInfo.accelerometer.type)
+    $('div#hud td.imu_gyro_type').text(imuInfo.gyroscope.type)
+    $('div#hud td.imu_mag_type').text(imuInfo.magnetometer.type)
   },
   handleIMUData: function() {
-    var c = this.packet[64] + 256 * this.packet[65] + 65536 * this.packet[66] + 16777216 * this.packet[67];
-    console.log("count=" + c);
+    var view = new DataView(this.packet.buffer);
+    imuData.a[0] = view.getFloat32(0, true);
+    imuData.a[1] = view.getFloat32(4, true);
+    imuData.a[2] = view.getFloat32(8, true);
+    imuData.g[0] = view.getFloat32(12, true);
+    imuData.g[1] = view.getFloat32(16, true);
+    imuData.g[2] = view.getFloat32(20, true);
+    imuData.m[0] = view.getFloat32(24, true);
+    imuData.m[1] = view.getFloat32(28, true);
+    imuData.m[2] = view.getFloat32(32, true);
+    imuQuat.q[0] = view.getFloat32(36, true);
+    imuQuat.q[1] = view.getFloat32(40, true);
+    imuQuat.q[2] = view.getFloat32(44, true);
+    imuQuat.q[3] = view.getFloat32(48, true);
+    imuAngles.roll = view.getFloat32(52, true);
+    imuAngles.pitch = view.getFloat32(56, true);
+    imuAngles.yaw = view.getFloat32(60, true);
+    this.count = view.getUint32(64, true);
+
+    // Update Madgwick filter
+    Madgwick.updateAHRS(
+      imuData.g[0],     // gx
+      imuData.g[1],     // gy
+      imuData.g[2],     // gz
+      imuData.a[0],     // ax
+      imuData.a[1],     // ay
+      imuData.a[2],     // az
+      0,                // imuData.m[0],     // mx
+      0,                // imuData.m[1],     // my
+      0);               // imuData.m[2]);    // mz
+
+    // Update graphs
+    update_imu_graphs();
   },
 };
