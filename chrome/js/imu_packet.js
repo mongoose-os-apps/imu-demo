@@ -59,6 +59,8 @@ var IMUPacket = {
               case 65: this.handleIMUData(); break;
               case 66: this.handleInfo(); break;
               case 67: this.handleLog(); break;
+              case 68: this.handleQuat(); break;
+              case 69: this.handleAngles(); break;
             }
             this.state=0;
           }
@@ -75,6 +77,24 @@ var IMUPacket = {
     $('div#info td.imu_gyro_type').text(imuInfo.gyroscope.type)
     $('div#info td.imu_mag_type').text(imuInfo.magnetometer.type)
   },
+  handleQuat: function() {
+    var view = new DataView(this.packet.buffer);
+    imuQuat.q[0] = view.getFloat32(0, true);
+    imuQuat.q[1] = view.getFloat32(4, true);
+    imuQuat.q[2] = view.getFloat32(8, true);
+    imuQuat.q[3] = view.getFloat32(12, true);
+  },
+  handleAngles: function() {
+    var view = new DataView(this.packet.buffer);
+    imuAngles.roll = view.getFloat32(0, true) * 180 / Math.PI;
+    imuAngles.pitch = view.getFloat32(4, true) * 180 / Math.PI;
+    imuAngles.yaw = view.getFloat32(8, true) * 180 / Math.PI;
+
+    // Update roll/pitch/yaw
+    $('span.imu_roll').text(imuAngles.roll.toFixed(1))
+    $('span.imu_pitch').text(imuAngles.pitch.toFixed(1))
+    $('span.imu_yaw').text(imuAngles.yaw.toFixed(1))
+  },
   handleIMUData: function() {
     var view = new DataView(this.packet.buffer);
     imuData.a[0] = view.getFloat32(0, true);
@@ -86,14 +106,7 @@ var IMUPacket = {
     imuData.m[0] = view.getFloat32(24, true);
     imuData.m[1] = view.getFloat32(28, true);
     imuData.m[2] = view.getFloat32(32, true);
-    imuQuat.q[0] = view.getFloat32(36, true);
-    imuQuat.q[1] = view.getFloat32(40, true);
-    imuQuat.q[2] = view.getFloat32(44, true);
-    imuQuat.q[3] = view.getFloat32(48, true);
-    imuAngles.roll = view.getFloat32(52, true) * 180 / Math.PI;
-    imuAngles.pitch = view.getFloat32(56, true) * 180 / Math.PI;
-    imuAngles.yaw = view.getFloat32(60, true) * 180 / Math.PI;
-    this.count = view.getUint32(64, true);
+    this.count = view.getUint32(36, true);
 
     // Update Madgwick filter
     Madgwick.updateAHRS(
@@ -109,11 +122,6 @@ var IMUPacket = {
 
     // Update graphs
     update_imu_graphs();
-
-    // Update roll/pitch/yaw
-    $('span.imu_roll').text(imuAngles.roll.toFixed(1))
-    $('span.imu_pitch').text(imuAngles.pitch.toFixed(1))
-    $('span.imu_yaw').text(imuAngles.yaw.toFixed(1))
   },
   handleLog: function() {
     var s = new TextDecoder("utf-8").decode(this.packet);
