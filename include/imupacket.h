@@ -29,3 +29,10 @@ struct imu_packet_offset {
   // IMU sample count
   uint32_t samples;
 };
+
+void imupacket_emit_data(struct imu_packet_data *p);
+void imupacket_emit_info(void *user_data);
+void imupacket_emit_quat(void *user_data);
+void imupacket_emit_angles(void *user_data);
+void imupacket_emit_log(const char *msg);
+void imupacket_emit_offset(struct imu_packet_offset *p);
