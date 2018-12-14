@@ -20,3 +20,12 @@ struct imu_packet_angles {
   // Roll/Pitch/Yaw in Rads
   float roll, pitch, yaw;
 };
+
+struct imu_packet_offset {
+  // Average over $(samples) data from the IMU in Accel and Gyro sensors
+  float    ax, ay, az;
+  float    gx, gy, gz;
+
+  // IMU sample count
+  uint32_t samples;
+};

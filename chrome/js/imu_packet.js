@@ -4,6 +4,7 @@ var imuData = {a: [0, 0, 0], g: [0, 0, 0], m: [0, 0, 0]};
 var imuInfo = {accelerometer: {type: ""}, gyroscope: {type: ""}, magnetometer: {type: ""}};
 var imuQuat = {q: [1.0, 0.0, 0.0, 0.0]};
 var imuAngles = {roll: 0, pitch:0, yaw:0};
+var imuOffset = {a: [0, 0, 0], g: [0, 0, 0], count: 0};
 
 var IMUPacket = {
   state: 0,
@@ -61,6 +62,7 @@ var IMUPacket = {
               case 67: this.handleLog(); break;
               case 68: this.handleQuat(); break;
               case 69: this.handleAngles(); break;
+              case 70: this.handleOffset(); break;
             }
             this.state=0;
           }
@@ -91,9 +93,9 @@ var IMUPacket = {
     imuAngles.yaw = view.getFloat32(8, true) * 180 / Math.PI;
 
     // Update roll/pitch/yaw
-    $('span.imu_roll').text(imuAngles.roll.toFixed(1))
-    $('span.imu_pitch').text(imuAngles.pitch.toFixed(1))
-    $('span.imu_yaw').text(imuAngles.yaw.toFixed(1))
+    $('span.imu_roll').text(parseInt(imuAngles.roll))
+    $('span.imu_pitch').text(parseInt(imuAngles.pitch))
+    $('span.imu_yaw').text(parseInt(imuAngles.yaw))
   },
   handleIMUData: function() {
     var view = new DataView(this.packet.buffer);
@@ -126,5 +128,17 @@ var IMUPacket = {
   handleLog: function() {
     var s = new TextDecoder("utf-8").decode(this.packet);
     console.log("IMU> " + s);
+  },
+  handleOffset: function() {
+    var view = new DataView(this.packet.buffer);
+    imuOffset.a[0] = view.getFloat32(0, true);
+    imuOffset.a[1] = view.getFloat32(4, true);
+    imuOffset.a[2] = view.getFloat32(8, true);
+    imuOffset.g[0] = view.getFloat32(12, true);
+    imuOffset.g[1] = view.getFloat32(16, true);
+    imuOffset.g[2] = view.getFloat32(20, true);
+    imuOffset.count = view.getUint32(24, true);
+
+    console.log("IMUOffset: " + JSON.stringify(imuOffset));
   },
 };
