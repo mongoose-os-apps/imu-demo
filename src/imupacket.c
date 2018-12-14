@@ -35,8 +35,6 @@ void imupacket_emit_info(void *user_data) {
   mgos_uart_write(0, g, strlen(g));
   mgos_uart_write(0, ",", 1);
   mgos_uart_write(0, m, strlen(m));
-
-  imupacket_emit_log("Hello world");
   return;
 }
 
