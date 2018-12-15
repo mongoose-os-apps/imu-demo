@@ -3,7 +3,7 @@
 // Initialize Madgwick filter at 100Hz.
 Madgwick.init(100);
 
-Serial.connect("/dev/ttyUSB1", {bitrate: 115200}, onReceiveCallback); // in serial.js
+Serial.connect("/dev/ttyUSB0", {bitrate: 115200}, onReceiveCallback); // in serial.js
 
 // Populate the serial ports dropdown
 Serial.getDevices(function (ports) {
