@@ -161,3 +161,22 @@ function update_imu_graphs() {
   raw_data_text_ements.y[2].text(imuData.m[1].toFixed(2));
   raw_data_text_ements.z[2].text(imuData.m[2].toFixed(2));
 }
+
+$('#graph_accel .scale select').change(function () {
+  var newScale = parseFloat($('#graph_accel .scale select').val());
+  accelHelpers = initGraphHelpers('#accel', samples_accel_i, [-newScale, newScale]); // m/s/s (1G == 9.807m/s/s)
+});
+
+$('#graph_gyro .scale select').change(function () {
+  var newScale = parseFloat($('#graph_gyro .scale select').val());
+  gyroHelpers = initGraphHelpers('#gyro', samples_gyro_i, [-newScale, newScale]); // Rad/sec (2000dps == 24.9Rad/sec)
+});
+
+$('#graph_mag .scale select').change(function () {
+  var newScale = parseFloat($('#graph_mag .scale select').val());
+  magHelpers = initGraphHelpers('#mag', samples_mag_i, [-newScale, newScale]); // uTesla
+});
+
+$('#graph_accel .scale select:first').change();
+$('#graph_gyro .scale select:first').change();
+$('#graph_mag .scale select:first').change();
