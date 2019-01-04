@@ -3,12 +3,15 @@
 // Initialize Madgwick filter at 100Hz.
 Madgwick.init(100);
 
-Serial.connect("/dev/ttyUSB0", {bitrate: 115200}, onReceiveCallback); // in serial.js
-
 // Populate the serial ports dropdown
 Serial.getDevices(function (ports) {
   $('div#ports #port').html(''); // clear list
+  var isConnected=false;
   for (var i = 0; i < ports.length; i++) {
+    if (!isConnected) {
+      Serial.connect(ports[i], {bitrate: 115200}, onReceiveCallback); // in serial.js
+      isConnected=true;
+    }
     $('div#ports #port').append($("<option/>", {value: ports[i], text: ports[i]}));
   }
 });
