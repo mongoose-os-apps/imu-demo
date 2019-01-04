@@ -95,7 +95,7 @@ static void handleInfo(void *packet, uint8_t len) {
 }
 
 static void handleLog(void *packet, uint8_t len) {
-  mvwprintw(log_window, 13, 1, "Log: %.*s", len, (char *)packet);
+  mvwprintw(log_window, 14, 1, "Log: %.*s", len, (char *)packet);
   (void)packet;
   (void)len;
 }
@@ -114,10 +114,10 @@ static void handleQuat(void *packet) {
 static void handleAngles(void *packet) {
   struct imu_packet_angles *d = (struct imu_packet_angles *)packet;
 
-  mvwprintw(log_window, 8, 1, "Angles:");
-  mvwprintw(log_window, 9, 3, "  Roll: %- 4d    ", (int)(RAD2DEG * d->roll));
-  mvwprintw(log_window, 10, 3, " Pitch: %- 4d    ", (int)(RAD2DEG * d->pitch));
-  mvwprintw(log_window, 11, 3, "   Yaw: %- 4d    ", (int)(RAD2DEG * d->yaw));
+  mvwprintw(log_window, 9, 1, "Angles:");
+  mvwprintw(log_window, 10, 3, "  Roll: %- 4d    ", (int)(RAD2DEG * d->roll));
+  mvwprintw(log_window, 11, 3, " Pitch: %- 4d    ", (int)(RAD2DEG * d->pitch));
+  mvwprintw(log_window, 12, 3, "   Yaw: %- 4d    ", (int)(RAD2DEG * d->yaw));
   (void)d;
 }
 
