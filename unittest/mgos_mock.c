@@ -37,10 +37,10 @@ int log_print_prefix(enum cs_log_level l, const char *func, const char *file) {
   }
 
   memset(fu_str, 0, sizeof(fu_str));
-  strncpy(fu_str, func, sizeof(fu_str)-1);
+  strncpy(fu_str, func, sizeof(fu_str) - 1);
 
   memset(fn_str, 0, sizeof(fn_str));
-  strncpy(fn_str, file, sizeof(fn_str)-1);
+  strncpy(fn_str, file, sizeof(fn_str) - 1);
 
   printf("%-5s %-15s %-40s| ", ll_str, fn_str, fu_str);
   return 1;
