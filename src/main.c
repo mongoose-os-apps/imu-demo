@@ -10,6 +10,38 @@ static uint16_t s_imu_info_period   = 5000;
 static uint16_t s_imu_quat_period   = 50;
 static uint16_t s_imu_angles_period = 100;
 
+#define BOARD    0
+
+#if BOARD == 1
+// LSM303D_L3GD20_COMBO -- sold as GY-89
+  #define ACC_I2CADDR     0x1d
+  #define ACC_TYPE        ACC_LSM303D
+  #define GYRO_I2CADDR    0x6b
+  #define GYRO_TYPE       GYRO_L3GD20
+  #define GYRO_ORIENT     { 0, -1, 0, 1, 0, 0, 0, 0, 1 }
+  #define MAG_I2CADDR     0x1d
+  #define MAG_TYPE        MAG_LSM303D
+  #define MAG_ORIENT      { 1, 0, 0, 0, 1, 0, 0, 0, 1 }
+#elif BOARD == 2
+// ITG3205_ADXL345_HMC5883L_COMBO -- sold as HW-579
+  #define ACC_I2CADDR     0x53
+  #define ACC_TYPE        ACC_ADXL345
+  #define GYRO_I2CADDR    0x68
+  #define GYRO_TYPE       GYRO_ITG3205
+  #define MAG_I2CADDR     0x1d
+  #define MAG_TYPE        MAG_LSM303D                 // MAG_HMC5883L
+#else
+// Sold as M5 Stack (ESP32 + MPU9250)
+  #define ACC_I2CADDR     0x68
+  #define ACC_TYPE        ACC_MPU9250
+  #define GYRO_I2CADDR    0x68
+  #define GYRO_TYPE       GYRO_MPU9250
+  #define GYRO_ORIENT     { 1, 0, 0, 0, 1, 0, 0, 0, 1 }
+  #define MAG_I2CADDR     0x0c
+  #define MAG_TYPE        MAG_AK8963
+  #define MAG_ORIENT      { 0, 1, 0, 1, 0, 0, 0, 0, -1 }
+#endif
+
 bool s_calibrating = false;
 struct mgos_imu_madgwick *s_filter = NULL;
 
@@ -108,14 +140,20 @@ enum mgos_app_init_result mgos_app_init(void) {
     return false;
   }
 
-  if (!mgos_imu_accelerometer_create_i2c(imu, i2c, 0x68, ACC_MPU9250)) {
+  if (!mgos_imu_accelerometer_create_i2c(imu, i2c, ACC_I2CADDR, ACC_TYPE)) {
     LOG(LL_ERROR, ("Cannot create accelerometer on IMU"));
   }
-  if (!mgos_imu_gyroscope_create_i2c(imu, i2c, 0x68, GYRO_MPU9250)) {
+  if (!mgos_imu_gyroscope_create_i2c(imu, i2c, GYRO_I2CADDR, GYRO_TYPE)) {
     LOG(LL_ERROR, ("Cannot create gyroscope on IMU"));
+  } else {
+    float orient[9] = GYRO_ORIENT;
+    mgos_imu_gyroscope_set_orientation(imu, orient);
   }
-  if (!mgos_imu_magnetometer_create_i2c(imu, i2c, 0x0C, MAG_AK8963)) {
+  if (!mgos_imu_magnetometer_create_i2c(imu, i2c, MAG_I2CADDR, MAG_TYPE)) {
     LOG(LL_ERROR, ("Cannot create magnetometer on IMU"));
+  } else {
+    float orient[9] = MAG_ORIENT;
+    mgos_imu_magnetometer_set_orientation(imu, orient);
   }
 
   if (!(s_filter = mgos_imu_madgwick_create())) {
