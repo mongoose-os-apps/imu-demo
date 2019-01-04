@@ -1,13 +1,19 @@
 #include "mgos.h"
 #include <errno.h>
+#include <ncurses.h>
 #include <fcntl.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
-#include "hexdump.h"
 #include "imupacket.h"
 
-char *portname = "/dev/ttyUSB12";
+
+#define DEG2RAD    (.017453292519943f)      /* PI / 180 */
+#define RAD2DEG    (57.2957795130823f)      /* 180 / PI */
+
+
+WINDOW *log_window;
+char *  portname = "/dev/ttyUSB12";
 
 static int serial_interface_attribs(int fd, int speed, int parity) {
   struct termios tty;
@@ -67,29 +73,52 @@ static void serial_blocking(int fd, int should_block) {
 static void handleIMUData(void *packet) {
   struct imu_packet_data *d = (struct imu_packet_data *)packet;
 
-  LOG(LL_DEBUG, ("ax=%.3f ay=%.3f az=%.3f gx=%.3f gy=%.3f gz=%.3f mx=%.3f my=%.3f mz=%.3f",
-                 d->ax, d->ay, d->az, d->gx, d->gy, d->gz, d->mx, d->my, d->mz));
+  mvwprintw(log_window, 2, 1, "IMU Data:");
+  mvwprintw(log_window, 3, 3, "Accelerometer:");
+  mvwprintw(log_window, 3, 18, "ax=%+ 9.3f  ", d->ax);
+  mvwprintw(log_window, 3, 31, "ay=%+ 9.3f  ", d->ay);
+  mvwprintw(log_window, 3, 44, "az=%+ 9.3f  ", d->az);
+  mvwprintw(log_window, 4, 7, "Gyroscope:");
+  mvwprintw(log_window, 4, 18, "gx=%+ 9.3f  ", d->gx);
+  mvwprintw(log_window, 4, 31, "gy=%+ 9.3f  ", d->gy);
+  mvwprintw(log_window, 4, 44, "gz=%+ 9.3f  ", d->gz);
+  mvwprintw(log_window, 5, 4, "Magnetometer:");
+  mvwprintw(log_window, 5, 18, "mx=%+ 9.3f", d->mx);
+  mvwprintw(log_window, 5, 31, "my=%+ 9.3f", d->my);
+  mvwprintw(log_window, 5, 44, "mz=%+ 9.3f", d->mz);
 }
 
 static void handleInfo(void *packet, uint8_t len) {
-  LOG(LL_INFO, ("info='%.*s'", len, (char *)packet));
+  mvwprintw(log_window, 1, 1, "Info:       %.*s", len, (char *)packet);
+  (void)packet;
+  (void)len;
 }
 
 static void handleLog(void *packet, uint8_t len) {
-  LOG(LL_INFO, ("log='%.*s'", len, (char *)packet));
+  mvwprintw(log_window, 13, 1, "Log: %.*s", len, (char *)packet);
   (void)packet;
+  (void)len;
 }
 
 static void handleQuat(void *packet) {
   struct imu_packet_quaternion *d = (struct imu_packet_quaternion *)packet;
 
-  LOG(LL_INFO, ("q={%.3f %.3f %.3f %.3f}", d->q0, d->q1, d->q2, d->q3));
+  mvwprintw(log_window, 7, 1, "Quaternion:");
+  mvwprintw(log_window, 7, 13, "q0=%+ 6.3f   ", d->q0);
+  mvwprintw(log_window, 7, 23, "q1=%+ 6.3f   ", d->q1);
+  mvwprintw(log_window, 7, 33, "q2=%+ 6.3f   ", d->q2);
+  mvwprintw(log_window, 7, 43, "q3=%+ 6.3f   ", d->q3);
+  (void)d;
 }
 
 static void handleAngles(void *packet) {
   struct imu_packet_angles *d = (struct imu_packet_angles *)packet;
 
-  LOG(LL_INFO, ("roll=%.3f pitch=%.3f yaw=%.3f", d->roll, d->pitch, d->yaw));
+  mvwprintw(log_window, 8, 1, "Angles:");
+  mvwprintw(log_window, 9, 3, "  Roll: %- 4d    ", (int)(RAD2DEG * d->roll));
+  mvwprintw(log_window, 10, 3, " Pitch: %- 4d    ", (int)(RAD2DEG * d->pitch));
+  mvwprintw(log_window, 11, 3, "   Yaw: %- 4d    ", (int)(RAD2DEG * d->yaw));
+  (void)d;
 }
 
 static void handleOffset(void *packet) {
@@ -166,26 +195,44 @@ static void serial_handle(char *buf, int n) {
       break;
     }
   }
-//  hexdump (buf, n);
 }
 
 int main() {
   int fd = open(portname, O_RDWR | O_NOCTTY | O_SYNC);
+  int ch;
 
   if (fd < 0) {
     LOG(LL_ERROR, ("error %d opening %s: %s", errno, portname, strerror(errno)));
     return -1;
   }
 
+  // Start ncurses
+  initscr();
+  noecho();
+  refresh();
+  timeout(1);
+
+  log_window = newwin(20, COLS, 0, 0);
+  box(log_window, 0, 0);
+  mvwprintw(log_window, 19, COLS - 20, " Press 'q' to exit ");
+  wrefresh(log_window);
+
   serial_interface_attribs(fd, 115200, 0); // set speed to 115,200 bps, 8n1 (no parity)
   serial_blocking(fd, 0);                  // set no blocking
 
-  for (;;) {
+  while ((ch = getch()) != 'q') {
     char buf [10000];
     int  n = read(fd, buf, sizeof buf);
     if (n > 0) {
       serial_handle(buf, n);
     }
+    wrefresh(log_window);
+    refresh();
   }
+  endwin();
+
+  printf("Thank you very much :)\n");
   return 0;
+
+  (void)ch;
 }
