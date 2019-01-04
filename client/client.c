@@ -20,7 +20,7 @@ static int serial_interface_attribs(int fd, int speed, int parity) {
 
   memset(&tty, 0, sizeof tty);
   if (tcgetattr(fd, &tty) != 0) {
-    LOG(LL_ERROR, ("error %d from tcgetattr", errno));
+    fprintf(stderr, "error from tcgetattr: %s", strerror(errno));
     return -1;
   }
 
@@ -47,7 +47,7 @@ static int serial_interface_attribs(int fd, int speed, int parity) {
   tty.c_cflag &= ~CRTSCTS;
 
   if (tcsetattr(fd, TCSANOW, &tty) != 0) {
-    LOG(LL_ERROR, ("error %d from tcsetattr", errno));
+    fprintf(stderr, "error from tcsetattr: %s", strerror(errno));
     return -1;
   }
   return 0;
@@ -58,7 +58,7 @@ static void serial_blocking(int fd, int should_block) {
 
   memset(&tty, 0, sizeof tty);
   if (tcgetattr(fd, &tty) != 0) {
-    LOG(LL_ERROR, ("error %d from tggetattr", errno));
+    fprintf(stderr, "error from tggetattr: %s", strerror(errno));
     return;
   }
 
@@ -66,7 +66,7 @@ static void serial_blocking(int fd, int should_block) {
   tty.c_cc[VTIME] = 5;                  // 0.5 seconds read timeout
 
   if (tcsetattr(fd, TCSANOW, &tty) != 0) {
-    LOG(LL_ERROR, ("error %d setting term attributes", errno));
+    fprintf(stderr, "error setting term attributes: %s", strerror(errno));
   }
 }
 
@@ -130,8 +130,6 @@ static void serial_handle(char *buf, int n) {
   uint8_t packet[256];
   uint8_t type, len, index, state;
 
-  // LOG(LL_INFO, ("%d bytes read, head=%c", n, buf[0]));
-
   i = 0; state = 0;
   for (i = 0; i < n; i++) {
     switch (state) {
@@ -185,7 +183,7 @@ static void serial_handle(char *buf, int n) {
         case 70: handleOffset(packet); break;
 
         default:
-          LOG(LL_WARN, ("Packet complete, unkonwn type=%d len=%d", type, len));
+                 break;
         }
         state = 0;
       }
@@ -202,7 +200,7 @@ int main() {
   int ch;
 
   if (fd < 0) {
-    LOG(LL_ERROR, ("error %d opening %s: %s", errno, portname, strerror(errno)));
+    fprintf(stderr, "error opening %s: %s", portname, strerror(errno));
     return -1;
   }
 

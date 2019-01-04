@@ -1,4 +1,4 @@
-TARGET = test
+TARGET = client
 LIBS = -lncurses
 CC = gcc
 CFLAGS = -g -Wall -I../include -I./ -I ./mongoose/
