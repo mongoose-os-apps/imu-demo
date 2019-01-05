@@ -42,7 +42,7 @@ This more sophisticated Chrome Extension will draw the device in your browser
 including graphs of the sensor data and other goodies. It's used by the
 author of the IMU library mostly to validate correctness of new drivers.
 
-![Chrome Demo](img/chrome-client.png)
+[![Chrome Demo](img/chrome-client.png)](https://youtu.be/G2P0DbbmTMo)
 
 # Disclaimer
 
