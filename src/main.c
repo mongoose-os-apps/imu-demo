@@ -9,14 +9,14 @@
 #include "boards.h"
 
 #ifndef BOARD
-  #define ACC_I2CADDR     -1
-  #define ACC_TYPE        -1
-  #define GYRO_I2CADDR    -1
-  #define GYRO_TYPE       -1
-  #define GYRO_ORIENT     { 1, 0, 0, 0, 1, 0, 0, 0, 1 }
-  #define MAG_I2CADDR     -1
-  #define MAG_TYPE        -1
-  #define MAG_ORIENT      { 1, 0, 0, 0, 1, 0, 0, 0, 1 }
+  #define ACC_I2CADDR     0x6b
+  #define ACC_TYPE        ACC_LSM9DS1
+  #define GYRO_I2CADDR    0x6b
+  #define GYRO_TYPE       GYRO_LSM9DS1
+  #define GYRO_ORIENT     { 1, 0, 0, 0, -1, 0, 0, 0, 1 }
+  #define MAG_I2CADDR     0x1e
+  #define MAG_TYPE        MAG_LSM9DS1
+  #define MAG_ORIENT      { -1, 0, 0, 0, -1, 0, 0, 0, 1 }
 #endif
 
 bool s_calibrating = false;
@@ -25,6 +25,25 @@ static uint16_t s_imu_period        = 10;     // msec
 static uint16_t s_imu_info_period   = 5000;
 static uint16_t s_imu_quat_period   = 50;
 static uint16_t s_imu_angles_period = 100;
+
+static void i2c_scanner(struct mgos_i2c *i2c);
+static void i2c_scanner(struct mgos_i2c *i2c) {
+  int i;
+
+  if (!i2c) {
+    LOG(LL_ERROR, ("No global I2C bus configured"));
+    return;
+  }
+
+  LOG(LL_INFO, ("Scanning I2C bus for devices"));
+  for (i = 0; i < 0x78; i++) {
+    if (mgos_i2c_write(i2c, i, NULL, 0, true)) {
+      LOG(LL_INFO, ("Found device at I2C address 0x%02x", i));
+    }
+  }
+  return;
+}
+
 
 static void imu_calibrate(struct mgos_imu *imu, struct imu_packet_data *p) {
   static struct imu_packet_offset o   = { 0, 0, 0, 0, 0, 0, 0 };
@@ -115,6 +134,8 @@ enum mgos_app_init_result mgos_app_init(void) {
     LOG(LL_ERROR, ("I2C bus missing, set i2c.enable=true in mos.yml"));
     return false;
   }
+
+  i2c_scanner(i2c);
 
   if (!imu) {
     LOG(LL_ERROR, ("Cannot create IMU"));
