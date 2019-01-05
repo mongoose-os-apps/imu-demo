@@ -13,7 +13,7 @@
 
 
 WINDOW *log_window;
-char *  portname = "/dev/ttyUSB12";
+char *  portname = "/dev/ttyUSB0";
 
 static int serial_interface_attribs(int fd, int speed, int parity) {
   struct termios tty;
