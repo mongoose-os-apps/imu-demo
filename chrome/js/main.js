@@ -5,14 +5,14 @@ Madgwick.init(100);
 
 // Populate the serial ports dropdown
 Serial.getDevices(function (ports) {
-  $('div#ports #port').html(''); // clear list
+  $('#port').html(''); // clear list
   var isConnected=false;
   for (var i = 0; i < ports.length; i++) {
     if (!isConnected) {
       Serial.connect(ports[i], {bitrate: 115200}, onReceiveCallback); // in serial.js
       isConnected=true;
     }
-    $('div#ports #port').append($("<option/>", {value: ports[i], text: ports[i]}));
+    $('#port').append($("<option/>", {value: ports[i], text: ports[i]}));
   }
 });
 

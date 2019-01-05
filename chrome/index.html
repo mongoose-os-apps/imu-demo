@@ -7,22 +7,7 @@
 
   <body>
     <div id="header">
-      <div id="ports">
-        <select id="port">
-          <option value="none">-</option>
-          <!-- port list gets generated here -->
-        </select>
-      </div>
-      <div id="portspeeds">
-        <select id="portspeed">
-          <option value="921600">921600</option>
-          <option value="460800">460800</option>
-          <option value="115200" selected="selected">115200</option>
-          <option value="38400">38400</option>
-          <option value="19200">19200</option>
-          <option value="9600">9600</option>
-        </select>
-      </div>
+      <img src="img/mongoose-logo-transparent.png" width=450px alt="logo" />
     </div>
 
     <div id="main">
@@ -37,10 +22,17 @@
         <div id="info">
           <table>
             <tr><th>Algorithm</th><td>Madgwick AHRS</td></tr>
-            <tr><th>Port</th><td class="port">-</td></tr>
-            <tr><th>IMU Gyro</th><td class="imu_gyro_type">-</td></tr>
-            <tr><th>IMU Accel</th><td class="imu_accel_type">-</td></tr>
-            <tr><th>IMU Mag</th><td class="imu_mag_type">-</td></tr>
+            <tr><th>Port</th><td class="port">
+                <!--      <div id="ports"> -->
+        <select id="port">
+          <option value="none">-</option>
+          <!-- port list gets generated here -->
+        </select>
+<!--                </div> -->
+              </td></tr>
+            <tr><th>Gyro</th><td class="imu_gyro_type">-</td></tr>
+            <tr><th>Accel</th><td class="imu_accel_type">-</td></tr>
+            <tr><th>Mag</th><td class="imu_mag_type">-</td></tr>
           </table>
         </div>
       </div>
