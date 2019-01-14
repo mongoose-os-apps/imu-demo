@@ -5,45 +5,45 @@
 #include "imupacket.h"
 #include "serial.h"
 
+#define BOARD  3
+#include "boards.h"
+
+#ifndef BOARD
+  #define ACC_I2CADDR     0x6b
+  #define ACC_TYPE        ACC_LSM9DS1
+  #define GYRO_I2CADDR    0x6b
+  #define GYRO_TYPE       GYRO_LSM9DS1
+  #define GYRO_ORIENT     { 1, 0, 0, 0, -1, 0, 0, 0, 1 }
+  #define MAG_I2CADDR     0x1e
+  #define MAG_TYPE        MAG_LSM9DS1
+  #define MAG_ORIENT      { -1, 0, 0, 0, -1, 0, 0, 0, 1 }
+#endif
+
+bool s_calibrating = false;
+struct mgos_imu_madgwick *s_filter = NULL;
 static uint16_t s_imu_period        = 10;     // msec
 static uint16_t s_imu_info_period   = 5000;
 static uint16_t s_imu_quat_period   = 50;
 static uint16_t s_imu_angles_period = 100;
 
-#define BOARD    0
+static void i2c_scanner(struct mgos_i2c *i2c);
+static void i2c_scanner(struct mgos_i2c *i2c) {
+  int i;
 
-#if BOARD == 1
-// LSM303D_L3GD20_COMBO -- sold as GY-89
-  #define ACC_I2CADDR     0x1d
-  #define ACC_TYPE        ACC_LSM303D
-  #define GYRO_I2CADDR    0x6b
-  #define GYRO_TYPE       GYRO_L3GD20
-  #define GYRO_ORIENT     { 0, -1, 0, 1, 0, 0, 0, 0, 1 }
-  #define MAG_I2CADDR     0x1d
-  #define MAG_TYPE        MAG_LSM303D
-  #define MAG_ORIENT      { 1, 0, 0, 0, 1, 0, 0, 0, 1 }
-#elif BOARD == 2
-// ITG3205_ADXL345_HMC5883L_COMBO -- sold as HW-579
-  #define ACC_I2CADDR     0x53
-  #define ACC_TYPE        ACC_ADXL345
-  #define GYRO_I2CADDR    0x68
-  #define GYRO_TYPE       GYRO_ITG3205
-  #define MAG_I2CADDR     0x1d
-  #define MAG_TYPE        MAG_LSM303D                 // MAG_HMC5883L
-#else
-// Sold as M5 Stack (ESP32 + MPU9250)
-  #define ACC_I2CADDR     0x68
-  #define ACC_TYPE        ACC_MPU9250
-  #define GYRO_I2CADDR    0x68
-  #define GYRO_TYPE       GYRO_MPU9250
-  #define GYRO_ORIENT     { 1, 0, 0, 0, 1, 0, 0, 0, 1 }
-  #define MAG_I2CADDR     0x0c
-  #define MAG_TYPE        MAG_AK8963
-  #define MAG_ORIENT      { 0, 1, 0, 1, 0, 0, 0, 0, -1 }
-#endif
+  if (!i2c) {
+    LOG(LL_ERROR, ("No global I2C bus configured"));
+    return;
+  }
 
-bool s_calibrating = false;
-struct mgos_imu_madgwick *s_filter = NULL;
+  LOG(LL_INFO, ("Scanning I2C bus for devices"));
+  for (i = 0; i < 0x78; i++) {
+    if (mgos_i2c_write(i2c, i, NULL, 0, true)) {
+      LOG(LL_INFO, ("Found device at I2C address 0x%02x", i));
+    }
+  }
+  return;
+}
+
 
 static void imu_calibrate(struct mgos_imu *imu, struct imu_packet_data *p) {
   static struct imu_packet_offset o   = { 0, 0, 0, 0, 0, 0, 0 };
@@ -138,6 +138,8 @@ enum mgos_app_init_result mgos_app_init(void) {
     return false;
   }
 
+  i2c_scanner(i2c);
+
   if (!imu) {
     LOG(LL_ERROR, ("Cannot create IMU"));
     return false;
@@ -146,14 +148,14 @@ enum mgos_app_init_result mgos_app_init(void) {
   acc_opts.type = ACC_TYPE;
   acc_opts.scale = 8.0;
   acc_opts.odr = 100;
-  if (!mgos_imu_accelerometer_create_i2c(imu, i2c, ACC_I2CADDR, &acc_opts)) {
+  if (ACC_I2CADDR>0 && !mgos_imu_accelerometer_create_i2c(imu, i2c, ACC_I2CADDR, &acc_opts)) {
     LOG(LL_ERROR, ("Cannot create accelerometer on IMU"));
   }
 
   gyro_opts.type = GYRO_TYPE;
   gyro_opts.scale = 2000;
   gyro_opts.odr = 100;
-  if (!mgos_imu_gyroscope_create_i2c(imu, i2c, GYRO_I2CADDR, &gyro_opts)) {
+  if (GYRO_I2CADDR>0 && !mgos_imu_gyroscope_create_i2c(imu, i2c, GYRO_I2CADDR, &gyro_opts)) {
     LOG(LL_ERROR, ("Cannot create gyroscope on IMU"));
   } else {
     float orient[9] = GYRO_ORIENT;
@@ -163,7 +165,7 @@ enum mgos_app_init_result mgos_app_init(void) {
   mag_opts.type = MAG_TYPE;
   mag_opts.scale = 8;
   mag_opts.odr = 10;
-  if (!mgos_imu_magnetometer_create_i2c(imu, i2c, MAG_I2CADDR, &mag_opts)) {
+  if (MAG_I2CADDR>0 && !mgos_imu_magnetometer_create_i2c(imu, i2c, MAG_I2CADDR, &mag_opts)) {
     LOG(LL_ERROR, ("Cannot create magnetometer on IMU"));
   } else {
     float orient[9] = MAG_ORIENT;
