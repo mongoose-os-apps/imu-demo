@@ -118,7 +118,7 @@ static void imu_cb(void *user_data) {
   }
 
   mgos_imu_madgwick_update(s_filter,
-                           p.gx, p.gy, p.gz,
+                           p.gx * DEG2RAD, p.gy * DEG2RAD, p.gz * DEG2RAD,
                            p.ax, p.ay, p.az,
                            0, 0, 0);
 
@@ -129,6 +129,9 @@ static void imu_cb(void *user_data) {
 enum mgos_app_init_result mgos_app_init(void) {
   struct mgos_i2c *i2c = mgos_i2c_get_global();
   struct mgos_imu *imu = mgos_imu_create();
+  struct mgos_imu_acc_opts acc_opts;
+  struct mgos_imu_gyro_opts gyro_opts;
+  struct mgos_imu_mag_opts mag_opts;
 
   if (!i2c) {
     LOG(LL_ERROR, ("I2C bus missing, set i2c.enable=true in mos.yml"));
@@ -140,16 +143,27 @@ enum mgos_app_init_result mgos_app_init(void) {
     return false;
   }
 
-  if (!mgos_imu_accelerometer_create_i2c(imu, i2c, ACC_I2CADDR, ACC_TYPE)) {
+  acc_opts.type = ACC_TYPE;
+  acc_opts.scale = 8.0;
+  acc_opts.odr = 100;
+  if (!mgos_imu_accelerometer_create_i2c(imu, i2c, ACC_I2CADDR, &acc_opts)) {
     LOG(LL_ERROR, ("Cannot create accelerometer on IMU"));
   }
-  if (!mgos_imu_gyroscope_create_i2c(imu, i2c, GYRO_I2CADDR, GYRO_TYPE)) {
+
+  gyro_opts.type = GYRO_TYPE;
+  gyro_opts.scale = 2000;
+  gyro_opts.odr = 100;
+  if (!mgos_imu_gyroscope_create_i2c(imu, i2c, GYRO_I2CADDR, &gyro_opts)) {
     LOG(LL_ERROR, ("Cannot create gyroscope on IMU"));
   } else {
     float orient[9] = GYRO_ORIENT;
     mgos_imu_gyroscope_set_orientation(imu, orient);
   }
-  if (!mgos_imu_magnetometer_create_i2c(imu, i2c, MAG_I2CADDR, MAG_TYPE)) {
+
+  mag_opts.type = MAG_TYPE;
+  mag_opts.scale = 8;
+  mag_opts.odr = 10;
+  if (!mgos_imu_magnetometer_create_i2c(imu, i2c, MAG_I2CADDR, &mag_opts)) {
     LOG(LL_ERROR, ("Cannot create magnetometer on IMU"));
   } else {
     float orient[9] = MAG_ORIENT;
