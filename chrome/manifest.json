@@ -19,6 +19,7 @@
 
   "permissions": [
     "serial",
-    "fullscreen", "overrideEscFullscreen"
+    "fullscreen", "overrideEscFullscreen",
+    "storage"
   ]
 }
