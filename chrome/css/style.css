@@ -115,14 +115,6 @@ span.hud_right {
 /*  border: 2px solid black; */
 }
 
-#footer {
-  width:              100%;
-  height:            100px;
-  color:             white;
-  background-color: #39f;
-  padding:             3px;
-}
-
 /* For a div going fullscreen in a chrome app, maximize height and width */
 div:-webkit-full-screen {
   width:   100% !important;
