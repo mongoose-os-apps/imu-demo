@@ -26,9 +26,9 @@ var SerialStats = {
         this.previous_imu_count = IMUPacket.count;
         this.previous_time = now;
 
-        $('div#footer span.serial_up').text(up+'%');
-        $('div#footer span.serial_down').text(down+'%');
-        $('div#footer span.imu_hz').text(freq.toFixed(1)+'Hz');
+        $('div#header span.serial_up').text(up+'%');
+        $('div#header span.serial_down').text(down+'%');
+        $('div#header span.imu_hz').text(freq.toFixed(1)+'Hz');
     },
     stop: function() {
       this.previous_received = 0;
@@ -37,9 +37,9 @@ var SerialStats = {
         clearInterval(this.timer);
         this.timer = -1;
       }
-      $('div#footer span.serial_up').text('-');
-      $('div#footer span.serial_down').text('-');
-      $('div#footer span.imu_hz').text('-');
+      $('div#header span.serial_up').text('-');
+      $('div#header span.serial_down').text('-');
+      $('div#header span.imu_hz').text('-');
     }
 };
 
@@ -347,11 +347,5 @@ var Serial = {
     emptyOutputBuffer: function () {
         this.outputBuffer = [];
         this.transmitting = false;
-    }
-};
-
-var onReceiveCallback = function (info) {
-    if (info.connectionId === Serial.connectionId && info.data) {
-        IMUPacket.readSerial(new Uint8Array(info.data));
     }
 };

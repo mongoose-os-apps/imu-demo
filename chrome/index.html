@@ -7,7 +7,12 @@
 
   <body>
     <div id="header">
-      <img src="img/mongoose-logo-transparent.png" width=450px alt="logo" />
+      <img src="img/mongoose-logo-transparent.png" height="30" alt="logo" />
+      <div id="serial_stats">
+        D:&nbsp;<span class="serial_down">-</span>&nbsp;
+        U:&nbsp;<span class="serial_up">-</span>&nbsp;
+        IMU:&nbsp;<span class="imu_hz">-</span>
+      </div>
     </div>
 
     <div id="main">
@@ -65,10 +70,10 @@
                 </dl>
               </div>
               <svg id="accel">
-                <g class="grid x" transform="translate(40, 120)"></g>
+                <g class="grid x" transform="translate(40, 176)"></g>
                 <g class="grid y" transform="translate(40, 10)"></g>
                 <g class="data" transform="translate(41, 10)"></g>
-                <g class="axis x" transform="translate(40, 120)"></g>
+                <g class="axis x" transform="translate(40, 176)"></g>
                 <g class="axis y" transform="translate(40, 10)"></g>
               </svg>
             <div class="clear-both"></div>
@@ -97,10 +102,10 @@
                 </dl>
               </div>
               <svg id="gyro">
-                <g class="grid x" transform="translate(40, 120)"></g>
+                <g class="grid x" transform="translate(40, 176)"></g>
                 <g class="grid y" transform="translate(40, 10)"></g>
                 <g class="data" transform="translate(41, 10)"></g>
-                <g class="axis x" transform="translate(40, 120)"></g>
+                <g class="axis x" transform="translate(40, 176)"></g>
                 <g class="axis y" transform="translate(40, 10)"></g>
               </svg>
             <div class="clear-both"></div>
@@ -130,27 +135,16 @@
                 </dl>
               </div>
               <svg id="mag">
-                <g class="grid x" transform="translate(40, 120)"></g>
+                <g class="grid x" transform="translate(40, 176)"></g>
                 <g class="grid y" transform="translate(40, 10)"></g>
                 <g class="data" transform="translate(41, 10)"></g>
-                <g class="axis x" transform="translate(40, 120)"></g>
+                <g class="axis x" transform="translate(40, 176)"></g>
                 <g class="axis y" transform="translate(40, 10)"></g>
               </svg>
             <div class="clear-both"></div>
           </div>
         </div>
-      <div id="input">
-        Input.
       </div>
-      </div>
-    </div>
-
-    <div id="footer">
-       <div id="serial_stats">
-         D:&nbsp;<span class="serial_down">-</span>&nbsp;
-         U:&nbsp;<span class="serial_up">-</span>&nbsp;
-         IMU:&nbsp;<span class="imu_hz">-</span>
-       </div>
     </div>
 
     <script type="text/javascript" src="js/lib/jquery-3.3.1.min.js"></script>
