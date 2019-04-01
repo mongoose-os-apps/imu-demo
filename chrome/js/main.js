@@ -1,5 +1,12 @@
 'use strict';
 
+window.addEventListener("resize", function () {
+  const height = window.innerHeight / 3;
+
+  $('.grid.x').attr('transform', `translate(40, ${height - 30})`);
+  $('.axis.x').attr('transform', `translate(40, ${height - 30})`);
+});
+
 // Initialize Madgwick filter at 100Hz.
 Madgwick.init(100);
 
