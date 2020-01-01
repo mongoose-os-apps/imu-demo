@@ -27,7 +27,7 @@ config_schema:
 
 # List of libraries used by this app, in order of initialisation
 libs:
-  - origin: libs/imu
+  - origin: https://github.com/mongoose-os-libs/imu
 
 # Used by the mos tool to catch mos binaries incompatible with this file format
 manifest_version: 2017-05-18
