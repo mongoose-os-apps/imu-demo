@@ -195,7 +195,14 @@ static void serial_handle(char *buf, int n) {
   }
 }
 
-int main() {
+int main(int argc, char **argv) {
+
+  printf("Argument count %d\n", argc);
+
+  if (argc > 1) {
+    portname = argv[1]; 
+  }
+
   int fd = open(portname, O_RDWR | O_NOCTTY | O_SYNC);
   int ch;
 
@@ -221,6 +228,7 @@ int main() {
   while ((ch = getch()) != 'q') {
     char buf [10000];
     int  n = read(fd, buf, sizeof buf);
+    handleLog(&buf,n);
     if (n > 0) {
       serial_handle(buf, n);
     }

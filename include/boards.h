@@ -21,6 +21,7 @@
   #define MAG_TYPE        MAG_HMC5883L
 #elif BOARD == 3
 // Sold as M5 Stack (ESP32 + MPU9250)
+// ADO on MPU9250 with power set to low
   #define ACC_I2CADDR     0x68
   #define ACC_TYPE        ACC_MPU9250
   #define GYRO_I2CADDR    0x68
@@ -38,4 +39,14 @@
   #define MAG_I2CADDR     0x0c
   #define MAG_TYPE        MAG_LSM9DS1
   #define MAG_ORIENT      { 1, 0, 0, 0, 1, 0, 0, 0, 1 }
+#elif BOARD == 5
+// AD0 on MPU9250 with power set to high  
+  #define ACC_I2CADDR     0x69
+  #define ACC_TYPE        ACC_MPU9250
+  #define GYRO_I2CADDR    0x69
+  #define GYRO_TYPE       GYRO_MPU9250
+  #define GYRO_ORIENT     { 1, 0, 0, 0, 1, 0, 0, 0, 1 }
+  #define MAG_I2CADDR     0x0c
+  #define MAG_TYPE        MAG_AK8963
+  #define MAG_ORIENT      { 0, 1, 0, 1, 0, 0, 0, 0, -1 }
 #endif
