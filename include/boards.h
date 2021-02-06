@@ -29,7 +29,7 @@
   #define MAG_I2CADDR     0x0c
   #define MAG_TYPE        MAG_AK8963
   #define MAG_ORIENT      { 0, 1, 0, 1, 0, 0, 0, 0, -1 }
-#elif BOARD == 3
+#elif BOARD == 4
   #define ACC_I2CADDR     0x68
   #define ACC_TYPE        ACC_LSM9DS1
   #define GYRO_I2CADDR    0x68
