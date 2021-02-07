@@ -5,7 +5,7 @@
 #include "imupacket.h"
 #include "serial.h"
 
-#define BOARD  3
+#define BOARD 3
 #include "boards.h"
 
 #ifndef BOARD
@@ -133,6 +133,8 @@ enum mgos_app_init_result mgos_app_init(void) {
   struct mgos_imu_gyro_opts gyro_opts;
   struct mgos_imu_mag_opts mag_opts;
 
+  LOG(LL_INFO, ("IMU demo starting"));
+
   if (!i2c) {
     LOG(LL_ERROR, ("I2C bus missing, set i2c.enable=true in mos.yml"));
     return false;
@@ -175,6 +177,8 @@ enum mgos_app_init_result mgos_app_init(void) {
   if (!(s_filter = mgos_imu_madgwick_create())) {
     LOG(LL_ERROR, ("Cannot create magnetometer on IMU"));
   }
+
+  LOG(LL_INFO, ("IMU Demo started successfully"));
 
   serial_init();
 
